@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { EventService } from "../services/event.service";
-
-const service = new EventService();
+import { IEventService } from "../interfaces/IEventService";
 
 export class EventController {
+  constructor(private service: IEventService) {}
+
   async getEvents(req: Request, res: Response) {
     try {
-      const events = await service.getEvents();
+      const events = await this.service.getEvents();
       res.json(events);
     } catch (e: any) {
       res.status(400).json({ error: e.message });
@@ -16,7 +16,7 @@ export class EventController {
   async getEvent(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);
-      const event = await service.getEvent(id);
+      const event = await this.service.getEvent(id);
       res.json(event);
     } catch (e: any) {
       res.status(400).json({ error: e.message });
@@ -25,7 +25,7 @@ export class EventController {
 
   async createEvent(req: Request, res: Response) {
     try {
-      const event = await service.createEvent(req.body);
+      const event = await this.service.createEvent(req.body);
       res.json(event);
     } catch (e: any) {
       res.status(400).json({ error: e.message });
@@ -35,7 +35,7 @@ export class EventController {
   async deleteEvent(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);
-      await service.deleteEvent(id);
+      await this.service.deleteEvent(id);
       res.json({ message: "Event deleted" });
     } catch (e: any) {
       res.status(400).json({ error: e.message });

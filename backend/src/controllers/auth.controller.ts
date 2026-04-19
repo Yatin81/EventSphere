@@ -1,15 +1,13 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services/auth.service";
-
-const service = new AuthService();
+import { IAuthService } from "../interfaces/IAuthService";
 
 export class AuthController {
+  constructor(private service: IAuthService) {}
+
   async signup(req: Request, res: Response) {
     try {
       const { email, password, role } = req.body;
-
-      const data = await service.signup(email, password, role);
-
+      const data = await this.service.signup(email, password, role);
       res.json(data);
     } catch (e: any) {
       res.status(400).json({ error: e.message });
@@ -19,9 +17,7 @@ export class AuthController {
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
-
-      const data = await service.login(email, password);
-
+      const data = await this.service.login(email, password);
       res.json(data);
     } catch (e: any) {
       res.status(400).json({ error: e.message });

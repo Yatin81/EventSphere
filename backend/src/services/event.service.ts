@@ -1,23 +1,18 @@
-import { EventRepository } from "../repositories/event.repository";
+import { IEventRepository } from "../interfaces/IEventRepository";
+import { IEventService } from "../interfaces/IEventService";
 
-export class EventService {
-  repo = new EventRepository();
+export class EventService implements IEventService {
+  constructor(private repo: IEventRepository) {}
 
   async getEvents() {
     return this.repo.getAllEvents();
   }
 
   async getEvent(id: number) {
-    const event = await this.repo.getEventById(id);
-    if (!event) throw new Error("Event not found");
-    return event;
+    return this.repo.getEventById(id);
   }
 
   async createEvent(data: any) {
-    if (!data.name || !data.date || !data.venueId) {
-      throw new Error("Missing required fields");
-    }
-
     return this.repo.createEvent(data);
   }
 

@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
-import { SeatService } from "../services/seat.service";
-
-const service = new SeatService();
+import { ISeatService } from "../interfaces/ISeatService";
 
 export class SeatController {
+  constructor(private service: ISeatService) {}
+
   async createSeats(req: Request, res: Response) {
     try {
       let { eventId, rows, seatsPerRow } = req.body;
-
       eventId = Number(eventId);
       seatsPerRow = Number(seatsPerRow);
 
@@ -15,12 +14,7 @@ export class SeatController {
         rows = rows.split(",");
       }
 
-      const result = await service.createSeats(
-        eventId,
-        rows,
-        seatsPerRow
-      );
-
+      const result = await this.service.createSeats(eventId, rows, seatsPerRow);
       res.json(result);
     } catch (e: any) {
       res.status(400).json({ error: e.message });
@@ -30,9 +24,7 @@ export class SeatController {
   async getLayout(req: Request, res: Response) {
     try {
       const eventId = Number(req.params.eventId);
-
-      const layout = await service.getSeatLayout(eventId);
-
+      const layout = await this.service.getSeatLayout(eventId);
       res.json(layout);
     } catch (e: any) {
       res.status(400).json({ error: e.message });
@@ -42,12 +34,21 @@ export class SeatController {
   async getAvailable(req: Request, res: Response) {
     try {
       const eventId = Number(req.params.eventId);
-
-      const seats = await service.getAvailableSeats(eventId);
-
+      const seats = await this.service.getAvailableSeats(eventId);
       res.json(seats);
     } catch (e: any) {
       res.status(400).json({ error: e.message });
     }
+  }
+
+  async lockSeats(req: any, res: Response) {
+     try {
+       const userId = req.user.id;
+       const { eventId, seatIds } = req.body;
+       await this.service.lockSeats(userId, eventId, seatIds);
+       res.json({ message: "Seats locked" });
+     } catch (e: any) {
+       res.status(400).json({ error: e.message });
+     }
   }
 }

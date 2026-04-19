@@ -1,0 +1,17 @@
+import { Router } from "express";
+import { VenueController } from "../controllers/venue.controller";
+import { VenueService } from "../services/venue.service";
+import { VenueRepository } from "../repositories/venue.repository";
+import { authMiddleware } from "../middleware/auth.middleware";
+import { requireRole } from "../middleware/role.middleware";
+
+const router = Router();
+const repo = new VenueRepository();
+const service = new VenueService(repo);
+const controller = new VenueController(service);
+
+router.get("/", controller.getVenues.bind(controller));
+router.post("/", authMiddleware, requireRole("ADMIN"), controller.createVenue.bind(controller));
+router.delete("/:id", authMiddleware, requireRole("ADMIN"), controller.deleteVenue.bind(controller));
+
+export default router;

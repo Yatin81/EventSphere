@@ -1,14 +1,16 @@
-import { prisma } from "../lib/prisma";
+import { BaseRepository } from "./base.repository";
+import { IAuthRepository } from "../interfaces/IAuthRepository";
+import { User } from "@prisma/client";
 
-export class AuthRepository {
-  async findByEmail(email: string) {
-    return prisma.user.findUnique({
+export class AuthRepository extends BaseRepository implements IAuthRepository {
+  async findByEmail(email: string): Promise<User | null> {
+    return this.db.user.findUnique({
       where: { email }
     });
   }
 
-  async createUser(data: any) {
-    return prisma.user.create({
+  async createUser(data: any): Promise<User> {
+    return this.db.user.create({
       data
     });
   }

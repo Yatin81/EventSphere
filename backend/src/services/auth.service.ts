@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
-import { AuthRepository } from "../repositories/auth.repository";
+import { IAuthRepository } from "../interfaces/IAuthRepository";
+import { IAuthService } from "../interfaces/IAuthService";
 import { generateToken } from "../utlis/jwt";
 
-export class AuthService {
-  repo = new AuthRepository();
+export class AuthService implements IAuthService {
+  constructor(private repo: IAuthRepository) {}
 
   async signup(email: string, password: string, role: string) {
     const exists = await this.repo.findByEmail(email);

@@ -19,16 +19,20 @@ model User {
   password String
   role     String
   bookings Booking[]
+  lockedSeats Seat[]
 }
 
 model Event {
-  id       Int      @id @default(autoincrement())
-  name     String
-  date     DateTime
-  venueId  Int
-  venue    Venue    @relation(fields: [venueId], references: [id])
-  bookings Booking[]
-  seats    Seat[]
+  id          Int      @id @default(autoincrement())
+  name        String
+  date        DateTime
+  category    String   @default("Trending")
+  imageUrl    String?
+  description String?  @db.Text
+  venueId     Int
+  venue       Venue    @relation(fields: [venueId], references: [id])
+  bookings    Booking[]
+  seats       Seat[]
 }
 
 model Booking {
@@ -53,6 +57,10 @@ model Seat {
 
   event    Event          @relation(fields: [eventId], references: [id])
   bookings Booking_Seat[]
+
+  lockedUntil    DateTime?
+  lockedByUserId Int?
+  lockedByUser   User?     @relation(fields: [lockedByUserId], references: [id], onDelete: SetNull)
 }
 
 model Booking_Seat {

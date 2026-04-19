@@ -7,8 +7,14 @@ import eventRoutes from "./routes/event.routes";
 import seatRoutes from "./routes/seat.routes";
 import bookingRoutes from "./routes/booking.routes";
 import venueRoutes from "./routes/venue.routes";
+import { CleanupService } from "./services/cleanup.service";
+import { SeatRepository } from "./repositories/seat.repository";
 
 dotenv.config();
+
+const seatRepo = new SeatRepository();
+const cleanupService = new CleanupService(seatRepo);
+cleanupService.start(60000);
 
 const app = express();
 app.use(cors());

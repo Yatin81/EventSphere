@@ -44,4 +44,17 @@ export class SeatRepository extends BaseRepository implements ISeatRepository {
       where: { id }
     });
   }
+
+  async releaseExpiredLocks(): Promise<void> {
+    await this.db.seat.updateMany({
+      where: {
+        status: "AVAILABLE",
+        lockedUntil: { lt: new Date() }
+      },
+      data: {
+        lockedUntil: null,
+        lockedByUserId: null
+      }
+    });
+  }
 }

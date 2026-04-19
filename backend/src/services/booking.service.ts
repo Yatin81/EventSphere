@@ -75,11 +75,21 @@ export class BookingService implements IBookingService {
     return await prisma.$transaction(async (tx) => {
       const booking = await tx.booking.findUnique({
         where: { id: bookingId },
-        include: { seats: true }
+        include: { seats: true, event: true }
       });
 
       if (!booking) throw new Error("Booking not found");
       if (booking.status === "CANCELLED") throw new Error("Booking already cancelled");
+
+      // Refund Policy: No cancellations within 24 hours of event
+      const eventDate = new Date(booking.event.date);
+      const now = new Date();
+      const diffMs = eventDate.getTime() - now.getTime();
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      if (diffHours < 24) {
+        throw new Error("Cancellations are not permitted within 24 hours of the event start time.");
+      }
 
       // 1. Update booking status
       await tx.booking.update({

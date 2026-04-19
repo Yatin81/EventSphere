@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+model Venue{
+  id Int  @id  @default(autoincrement())
+  name String
+  location String
+  events Event[]
+
+}
+model User{
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  role String
+  bookings Booking[]
+}
+model Event{
+  id Int @id @default(autoincrement())
+  name String
+  date DateTime
+  venueId Int 
+  venue    Venue     @relation(fields: [venueId], references: [id])
+  bookings Booking[]
+  seats Seat[]
+}
+model Booking{
+  id Int @id @default(autoincrement())
+  userId Int
+  eventId Int 
+  status String
+  totalAmount Float
+  user User @relation(fields: [userId],references: [id])
+  event Event @relation(fields: [eventId],references: [id])
+  seats  Booking_Seat[]
+  payment Payment?
+ 
+
+}
+model Seat{
+  id Int @id @default(autoincrement())
+  eventId Int 
+  row String
+  seatNumber Int
+  status String 
+  event Event @relation(fields: [eventId],references: [id])
+  bookings  Booking_Seat[]
+}
+model Booking_Seat {
+  bookingId Int
+  seatId    Int
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+  seat    Seat    @relation(fields: [seatId], references: [id])
+
+  @@id([bookingId, seatId])
+}
+model Payment{
+  id Int @id @default(autoincrement())
+  status String
+  amount Float
+  bookingId Int @unique
+  booking Booking @relation(fields: [bookingId],references: [id])
+}

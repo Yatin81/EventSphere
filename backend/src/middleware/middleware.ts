@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from '../utlis/jwt';
+import { verifyToken } from "../utlis/jwt";
 
 export const authMiddleware = (req: any, res: Response, next: NextFunction) => {
   try {

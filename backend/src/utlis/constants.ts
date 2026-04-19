@@ -1,0 +1,15 @@
+export const ROLES = {
+  ADMIN: "ADMIN",
+  USER: "USER"
+};
+
+export const SEAT_STATUS = {
+  AVAILABLE: "AVAILABLE",
+  BOOKED: "BOOKED"
+};
+
+export const BOOKING_STATUS = {
+  PENDING: "PENDING",
+  CONFIRMED: "CONFIRMED",
+  CANCELLED: "CANCELLED"
+};

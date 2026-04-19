@@ -6,18 +6,19 @@ export class BookingService {
   repo = new BookingRepository();
 
   async bookSeats(userId: number, eventId: number, seatIds: number[]) {
-    const lockKeys = seatIds.map((id) => `seat:${id}`);
+    if (!seatIds || seatIds.length === 0) {
+      throw new Error("No seats selected");
+    }
 
-    // 🔒 Step 1: Lock seats in Redis
+    const lockKeys = seatIds.map((id) => `seat:${id}`);
     for (const key of lockKeys) {
-      const result = await redis.set(key, "locked", "NX", "EX", 60);
-      if (!result) {
+      const locked = await redis.set(key, "locked", "NX", "EX", 60);
+      if (!locked) {
         throw new Error("Some seats are being booked by another user");
       }
     }
 
     try {
-      // 🔥 Step 2: DB Transaction
       const booking = await prisma.$transaction(async (tx) => {
         const seats = await this.repo.findAvailableSeats(tx, seatIds);
 
@@ -25,7 +26,7 @@ export class BookingService {
           throw new Error("Some seats already booked");
         }
 
-        const createdBooking = await this.repo.createBooking(tx, {
+        const created = await this.repo.createBooking(tx, {
           userId,
           eventId,
           status: "CONFIRMED",
@@ -33,10 +34,9 @@ export class BookingService {
         });
 
         await this.repo.markSeatsBooked(tx, seatIds);
+        await this.repo.linkSeats(tx, created.id, seatIds);
 
-        await this.repo.linkSeats(tx, createdBooking.id, seatIds);
-
-        return createdBooking;
+        return created;
       });
 
       return booking;

@@ -9,13 +9,19 @@ export class BookingRepository {
   }
 
   async createBooking(tx: any, data: any) {
-    return tx.booking.create({ data });
+    return tx.booking.create({
+      data
+    });
   }
 
   async markSeatsBooked(tx: any, seatIds: number[]) {
     return tx.seat.updateMany({
-      where: { id: { in: seatIds } },
-      data: { status: "BOOKED" }
+      where: {
+        id: { in: seatIds }
+      },
+      data: {
+        status: "BOOKED"
+      }
     });
   }
 

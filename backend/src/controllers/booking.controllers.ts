@@ -13,7 +13,11 @@ export class BookingController {
         return res.status(400).json({ error: "Invalid input" });
       }
 
-      const booking = await service.bookSeats(userId, eventId, seatIds);
+      const booking = await service.bookSeats(
+        userId,
+        eventId,
+        seatIds
+      );
 
       res.json(booking);
     } catch (e: any) {

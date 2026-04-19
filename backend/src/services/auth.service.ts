@@ -17,7 +17,10 @@ export class AuthService {
       role
     });
 
-    const token = generateToken({ id: user.id });
+    const token = generateToken({
+      id: user.id,
+      role: user.role
+    });
 
     return { user, token };
   }
@@ -29,7 +32,10 @@ export class AuthService {
     const match = await bcrypt.compare(password, user.password);
     if (!match) throw new Error("Invalid credentials");
 
-    const token = generateToken({ id: user.id });
+    const token = generateToken({
+      id: user.id,
+      role: user.role
+    });
 
     return { user, token };
   }

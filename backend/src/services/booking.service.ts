@@ -3,6 +3,7 @@ import { IBookingService } from "../interfaces/IBookingService";
 import { ISeatRepository } from "../interfaces/ISeatRepository";
 import { IPricingStrategy } from "../interfaces/IPricingStrategy";
 import { prisma } from "../lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export class BookingService implements IBookingService {
   constructor(
@@ -13,7 +14,7 @@ export class BookingService implements IBookingService {
 
   async bookSeats(userId: number, eventId: number, seatIds: number[]) {
     // Use transaction for atomic booking
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. Calculate occupancy for Strategy-based Pricing
       const allSeatsCount = await tx.seat.count({ where: { eventId } });
       const bookedSeatsCount = await tx.seat.count({ where: { eventId, status: "BOOKED" } });
@@ -72,7 +73,7 @@ export class BookingService implements IBookingService {
   }
 
   async cancelBooking(bookingId: number) {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const booking = await tx.booking.findUnique({
         where: { id: bookingId },
         include: { seats: true, event: true }

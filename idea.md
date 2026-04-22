@@ -19,7 +19,6 @@ The application simulates a production-grade event booking system where multiple
 - Prisma ORM
 - PostgreSQL
 - JWT Authentication
-- Redis (optional for seat locking optimization)
 
 ### Frontend
 - React (TSX)

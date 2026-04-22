@@ -72,7 +72,7 @@ Controller → Service → Repository → Database
 ##  Setup
 
 ```bash
-git clone https://github.com/your-username/eventsphere.git
+git clone https://github.com/Yatin81/eventsphere.git
 cd eventsphere
 
 Backend
